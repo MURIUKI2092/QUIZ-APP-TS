@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import QuestionCard from "./components/Questionard";
 import { fetchQuizQuestions, QuestionState, Difficulty } from "./API";
-type AnswerObject = {
+export type AnswerObject = {
   question: string;
   answer: string;
   correct: boolean;
@@ -36,8 +36,37 @@ const App = () => {
       console.log("An Error Occured", e);
     }
   };
-  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {};
-  const nextQuestion = () => {};
+  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!gameOver) {
+      // check users answer
+      const answer = e.currentTarget.value;
+
+      //check correct answer
+      const correct = questions[number].correct_answer === answer;
+
+      // add score if the answer is correct
+      if (correct) setScore((user_score) => user_score + 1);
+      //save answer in the array for user answers
+      const answerObject = {
+        question: questions[number].question,
+        answer,
+        correct,
+        correctAnswer: questions[number].correct_answer,
+      };
+      // console.log(answerObject, "+++++++");
+      setUserAnswers((prev) => [...prev, answerObject]);
+    }
+  };
+
+  const nextQuestion = () => {
+    // move on the last question if not the last
+    const next_question = number + 1;
+    if (next_question === total_questions) {
+      setGameOver(true);
+    } else {
+      setNumber(next_question);
+    }
+  };
   return (
     <div className="App">
       <h1>REACT QUIZ</h1>
@@ -46,7 +75,7 @@ const App = () => {
           Start
         </button>
       ) : null}
-      {!gameOver ? <p>Score: </p> : null}
+      {!gameOver ? <p>Score:{score} </p> : null}
 
       {loading && <p>Loading Questions....</p>}
       {!loading && !gameOver && (
@@ -59,9 +88,14 @@ const App = () => {
           callback={checkAnswer}
         />
       )}
-      <button className="next" onClick={nextQuestion}>
-        Next
-      </button>
+      {!gameOver &&
+      !loading &&
+      userAnswers.length === number + 1 &&
+      number !== total_questions - 1 ? (
+        <button className="next" onClick={nextQuestion}>
+          Next
+        </button>
+      ) : null}
     </div>
   );
 };
