@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import QuestionCard from "./components/Questionard";
 import { fetchQuizQuestions, QuestionState, Difficulty } from "./API";
